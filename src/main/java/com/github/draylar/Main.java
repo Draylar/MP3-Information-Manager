@@ -4,6 +4,7 @@ import com.github.draylar.screens.MainScreen;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -51,6 +52,17 @@ public class Main extends Application {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setSelectedExtensionFilter(fileFilter);
         File selectedFile = fileChooser.showOpenDialog(stage);
+        return selectedFile;
+    }
+
+
+    /**
+     * Opens the directory chooser/dialog window for finding the user's music directory.
+     * @return
+     */
+    public static File openDirectoryChooser() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedFile = directoryChooser.showDialog(stage);
         return selectedFile;
     }
 }
