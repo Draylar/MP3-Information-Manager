@@ -3,12 +3,14 @@ package com.github.draylar.screens;
 import com.github.draylar.Main;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
-import javafx.geometry.Pos;
+import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 import java.io.File;
 
@@ -16,6 +18,9 @@ public class MainScreen extends GridPane {
 
     private JFXButton start = new JFXButton();
     private JFXCheckBox checkBox = new JFXCheckBox();
+
+    private Text title = new Text();
+    private Text explaination = new Text();
 
     public MainScreen() {
         configureGrid();
@@ -46,10 +51,23 @@ public class MainScreen extends GridPane {
      * Configures the children of the grid.
      */
     private void configureChildren() {
+        GridPane.setHalignment(title, HPos.CENTER);
+        GridPane.setHalignment(explaination, HPos.CENTER);
+        GridPane.setHalignment(start, HPos.CENTER);
+        GridPane.setHalignment(checkBox, HPos.CENTER);
+
         start.setText("Start");
         checkBox.setText("Only go through files without album art");
+        title.setText("MP3 Information Manager");
+        explaination.setText("The MP3 Information Manager will go through the music files in a specified directory, \n and allow you to configure their properties. \n \n" +
+                "The base properties include things such as file name, song name, artist name, and album art. \n" +
+                "Fill out the settings, and then hit 'Start' to begin.");
 
-        this.add(start, 50, 70);
+        explaination.setTextAlignment(TextAlignment.CENTER);
+
+        this.add(title, 0, 0, 100, 20);
+        this.add(explaination, 0, 5, 100, 30);
+        this.add(start, 40, 70, 20, 10);
         this.add(checkBox, 50, 40);
     }
 
