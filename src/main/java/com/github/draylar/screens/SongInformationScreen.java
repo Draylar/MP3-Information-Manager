@@ -122,13 +122,17 @@ public class SongInformationScreen extends GridPane {
         });
 
         previousButton.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            currentSongIndex--;
-            displaySongInformation(currentSongIndex);
+            if (currentSongIndex != 0) {
+                currentSongIndex--;
+                displaySongInformation(currentSongIndex);
+            }
         });
 
         skipButton.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            currentSongIndex++;
-            displaySongInformation(currentSongIndex);
+            if (currentSongIndex + 1 < songList.size()) {
+                currentSongIndex++;
+                displaySongInformation(currentSongIndex);
+            }
         });
 
         albumArt.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
@@ -144,37 +148,42 @@ public class SongInformationScreen extends GridPane {
      * @param index index of the music file in the song ArrayList
      */
     private void displaySongInformation(int index) {
-        // todo: make sure to check Array bounds for IndexOutOfBoundsException
+        // check to make sure the index is valid
+        if (songList.size() >= index + 1 && index >= 0) {
+            try {
+                // set up mp3 file and tag objects
+                Mp3File mp3File = new Mp3File(songList.get(index));
+                ID3v2 tag = mp3File.getId3v2Tag();
 
-        try {
-            // set up mp3 file and tag objects
-            Mp3File mp3File = new Mp3File(songList.get(index));
-            ID3v2 tag = mp3File.getId3v2Tag();
+                // get song file name without extension
+                String name = songList.get(index).getName();
+                if (name.lastIndexOf(".") != 0) name = name.substring(0, name.lastIndexOf("."));
 
-            // get song file name without extension
-            String name = songList.get(index).getName();
-            if (name.lastIndexOf(".") != 0) name = name.substring(0, name.lastIndexOf("."));
+                // set song information
+                fileName.setText(name);
+                songName.setText(tag.getTitle());
+                artistName.setText(tag.getAlbumArtist());
 
-            // set song information
-            fileName.setText(name);
-            songName.setText(tag.getTitle());
-            artistName.setText(tag.getAlbumArtist() );
+                // get album art-- if it does exist, set it, otherwise set the art to the "no album image" placeholder
+                byte[] imageByteArray = tag.getAlbumImage();
+                if (imageByteArray != null) {
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageByteArray));
+                    albumArt.setImage(SwingFXUtils.toFXImage(image, null));
+                } else {
+                    albumArt.setImage(new Image("NoAlbumArt.png"));
+                }
 
-            // get album art-- if it does exist, set it, otherwise set the art to the "no album image" placeholder
-            byte[] imageByteArray = tag.getAlbumImage();
-            if (imageByteArray != null) {
-                BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageByteArray));
-                albumArt.setImage(SwingFXUtils.toFXImage(image, null));
-            } else {
-                albumArt.setImage(new Image("NoAlbumArt.png"));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Invalid song!");
+
+                // make sure we don't queue into a non-existing song (array out of bounds) which would trigger an error loop
+                if (!(currentSongIndex + 1 < songList.size())) {
+                    currentSongIndex++;
+                    displaySongInformation(currentSongIndex);
+                }
             }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Invalid song!");
-            currentSongIndex++;
-            displaySongInformation(currentSongIndex);
         }
     }
 
