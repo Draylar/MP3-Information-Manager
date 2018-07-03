@@ -48,10 +48,15 @@ public class SongInformationScreen extends GridPane {
 
     private ImageView albumArt = new ImageView();
 
+    private boolean onlyNoAlbumArtFiles;
 
-    public SongInformationScreen(File mainDirectory) {
+
+    public SongInformationScreen(File mainDirectory, boolean onlyNoAlbumArtFiles) {
         this.mainDirectory = mainDirectory;
         this.songList = SongManager.getInstance().getAllSongsInFile(mainDirectory);
+        this.onlyNoAlbumArtFiles = onlyNoAlbumArtFiles;
+
+        System.out.println(onlyNoAlbumArtFiles);
 
         configureGrid();
         configureChildren();
@@ -159,20 +164,26 @@ public class SongInformationScreen extends GridPane {
                 String name = songList.get(index).getName();
                 if (name.lastIndexOf(".") != 0) name = name.substring(0, name.lastIndexOf("."));
 
-                // set song information
-                fileName.setText(name);
-                songName.setText(tag.getTitle());
-                artistName.setText(tag.getAlbumArtist());
-
                 // get album art-- if it does exist, set it, otherwise set the art to the "no album image" placeholder
                 byte[] imageByteArray = tag.getAlbumImage();
                 if (imageByteArray != null) {
-                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageByteArray));
-                    albumArt.setImage(SwingFXUtils.toFXImage(image, null));
+                    // check if we should skip to the next one because of the settings
+                    if (onlyNoAlbumArtFiles) {
+                        currentSongIndex++;
+                        displaySongInformation(currentSongIndex);
+                        return;
+                    } else {
+                        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageByteArray));
+                        albumArt.setImage(SwingFXUtils.toFXImage(image, null));
+                    }
                 } else {
                     albumArt.setImage(new Image("NoAlbumArt.png"));
                 }
 
+                // set song information
+                fileName.setText(name);
+                songName.setText(tag.getTitle());
+                artistName.setText(tag.getAlbumArtist());
 
             } catch (Exception e) {
                 e.printStackTrace();
