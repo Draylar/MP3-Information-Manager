@@ -158,7 +158,7 @@ public class SongInformationScreen extends GridPane {
             // set song information
             fileName.setText(name);
             songName.setText(tag.getTitle());
-            artistName.setText(tag.getArtist());
+            artistName.setText(tag.getAlbumArtist() );
 
             // get album art-- if it does exist, set it, otherwise set the art to the "no album image" placeholder
             byte[] imageByteArray = tag.getAlbumImage();
